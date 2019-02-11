@@ -12,15 +12,14 @@ services:
         build: .
         environment:
             - HOST=influxdb
-            - UPTIME_ROBOT_KEYS=${UPTIME_ROBOT_KEYS}
-            - UPTIME_API_URL=${UPTIME_API_URL}
-            - UPTIME_INTERVAL_DAYS=${UPTIME_INTERVAL_DAYS}
+            - SONARQUBE_TOKEN=$SONARQUBE_TOKEN
+            - SONARQUBE_API_URL=$SONARQUBE_API_URL
         depends_on:
             - influxdb
         ports:
             - 3000:3000
         volumes:
-            - ./src:/usr/src/garie-sonarqube/src
+            - ./src:/usr/src/garie-plugin/src
         command: bash -c "tail -f /dev/null"
 
     chronograf:

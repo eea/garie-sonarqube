@@ -3,7 +3,7 @@ set -e
 
 
 if [ -z "$SONARQUBE_TOKEN" ]; then
-        echo "Please provide the sonarqube keys in the UPTIME_ROBOT_KEYS variable"
+        echo "Please provide the plugin keys in the UPTIME_ROBOT_KEYS variable"
         exit 1
 fi
 
@@ -17,8 +17,8 @@ fi
 
 
 if [ -n "$CONFIG" ]; then
-	echo "Found configuration variable, will write it to the /usr/src/garie-sonarqube/config.json"
-	echo "$CONFIG" > /usr/src/garie-sonarqube/config.json
+	echo "Found configuration variable, will write it to the /usr/src/garie-plugin/config.json"
+	echo "$CONFIG" > /usr/src/garie-plugin/config.json
 fi
 
 exec "$@"

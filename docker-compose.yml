@@ -18,7 +18,7 @@ services:
         depends_on:
             - influxdb
         volumes:
-            - ./src:/usr/src/garie-sonarqube/src
+            - ./src:/usr/src/garie-plugin/src
 
     chronograf:
         image: 'chronograf:latest'
