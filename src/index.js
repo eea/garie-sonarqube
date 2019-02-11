@@ -14,7 +14,7 @@ function getTag(url){
         var urlObject = urlparser.parse(url);
 
 
-        var tag = (urlObject.hostname+urlObject.path.replace("/","-")).toLowerCase();
+        var tag = (urlObject.hostname+urlObject.path.replace(/\//g,"-")).toLowerCase();
 	
 	if ( tag.substring(tag.length-1, tag.length) == '-' ) {
 	 tag = tag.substring(0,tag.length-1);
@@ -34,29 +34,41 @@ const getProjectsByTag = async (tag) => {
 
       const sonarqubeApi = process.env.SONARQUBE_API_URL+"/api/components/search_projects";
 
-
+       console.log(`tag is ${tag}`);
         data = await request({
           method: 'GET',
           uri: sonarqubeApi,
-          body: {
-            'ps':  200, //maximum 
-            'filter': `tags%20%3D%20${tag}`
-          },
+          qs: {
+            'filter': `tags = ${tag}`,
+              'ps': 500},
           json: true,
           resolveWithFullResponse: true
         });
 
-    console.log(data['body']);
+    const response=data['body'];
 
+//	    console.log(data);
     // write data
 	    //
 	    //
-      if ( data['body']["paging"]["total"] > data['body']['paging']['pageSize'] ) {
+      if ( response["paging"]["total"] > response['paging']['pageSize'] ) {
               console.log("No paging implemented, too many projects per url - limit is 500");
               reject("reject");
       }
 
-      resolve(data["components"]);
+  var result = [];
+	    
+  for (var i = 0; i < response["components"].length; i++) {
+        if ( response["components"][i]["tags"].indexOf("master") >=0 )
+        {
+		result.push(response["components"][i]);
+        }
+    }
+
+
+
+
+      resolve(result);
     } catch (err) {
       console.log(err);
       reject("reject");
@@ -84,15 +96,16 @@ const getProjectStats = async (projects) => {
     }
  
        projectKeys=projectKeys.substring(0, projectKeys.length-1);
-
+      
+      console.log(` Projectkeys are ${projectKeys}`);
 
       const sonarqubeApi = process.env.SONARQUBE_API_URL+"/api/measures/search";
 
 
-        data = await request({
+      const  response = await request({
           method: 'GET',
           uri: sonarqubeApi,
-          body: {
+          qs: {
             'projectKeys':  projectKeys,
             'metricKeys': 'bugs,reliability_rating,vulnerabilities,security_rating,code_smells,sqale_rating,duplicated_lines_density,coverage,lines_to_cover,uncovered_lines,duplicated_lines,lines'
           },
@@ -102,7 +115,9 @@ const getProjectStats = async (projects) => {
 
     //write data
 
-     console.log(data);
+     data = response["body"];
+
+//     console.log(data);
 
          stats={'bugs':0,'reliability_rating':1,'vulnerabilities':0,'security_rating':1,'code_smells':0,'sqale_rating':1,'duplicated_lines_density':0, 'coverage':0, 'lines_to_cover': 0, 'uncovered_lines': 0, 'duplicated_lines': 0, 'lines': 0 , 'non_duplication_rating': 100, 'coverage_rating': 100 };
 
@@ -136,6 +151,10 @@ const getProjectStats = async (projects) => {
          
 		  stats['coverage_rating'] = 100 - (stats['uncovered_lines'] *100 / stats['lines_to_cover']);
 		  }
+
+
+  
+
              resolve(stats);
     } catch (err) {
       console.log(err);
@@ -163,10 +182,17 @@ const getData = async (options) => {
 
     projects = await getProjectsByTag(tag);
 
+	  if (projects != null && projects.length > 0) {
+
     console.log("get stats");
 
     stats = await getProjectStats(projects);
-
+    console.log (` ${url} and stats ${stats.toString()} `);
+	  }
+	  else
+	  {     console.log("no projects found");
+		  reject("reject");
+	  }
 
     resolve(stats);
 
