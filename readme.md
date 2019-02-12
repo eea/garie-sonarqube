@@ -1,14 +1,12 @@
 
-# Garie plugin to extract uptime statistics from https://sonarqube.com/
+# Garie plugin to extract Sonarqube statistics by tags
 
-Can have multiple accounts/keys. Will extract the uptime for the last number of days ( configured in environment ).
 
 
 ## Variables
 
-- UPTIME_ROBOT_KEYS - List of keys, separated by space 
-- UPTIME_API_URL - Uptimerobot api url
-- UPTIME_INTERVAL_DAYS - Interval to check the monitors on
+- SONARQUBE_TOKEN - used for authentification
+- SONARQUBE_API_URL - SonarqubeUrl
 
 
 ## Usage
@@ -16,6 +14,36 @@ Can have multiple accounts/keys. Will extract the uptime for the last number of 
 Use example.env as a template for .env file with the correct values.
 
 cp example.env .env
+
+The results that will be added to the database are an agregation of all url-related sonarqube projects:
+
+```
+      stats = {
+        'bugs'  // total number of bugs
+        'reliability_rating' // bug rating - we take the worst from all sonarqube projects -0-25-50-75-100
+        'vulnerabilities' // sum of vulnerabilities
+        'security_rating' // security rating - we take the worst from all sonarqube projects -0-25-50-75-100
+        'code_smells' // sum of code smells
+        'sqale_rating' // code smell rating - we take the worst from all sonarqube projects -0-25-50-75-100
+        'lines_to_cover' // sum of lines that should be covered with tests
+        'uncovered_lines' // sum of lines that are not covered with tests
+        'duplicated_lines' // sum of lines that are duplicates
+        'lines' // sum of lines 
+        'non_duplication_rating' // calculated from total values on all projects
+        'coverage_rating'  // calculated from total values on all projects
+      };
+
+```
+
+
+We are extracting the projects that have the tag `master` and the tag that is created from the url by following the rules:
+1. all lowercase
+2. No underscores (_)
+3. Slash (/) becomes line -
+4. If url ends with /, it is deleted
+
+
+
 
 
 ### For development

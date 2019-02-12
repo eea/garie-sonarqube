@@ -9,12 +9,11 @@ services:
             - INFLUXDB_ADMIN_PASSWORD=admin
 
     garie-plugin:
-        image: garie-plugin 
+        image: garie-sonarqube 
         environment:
             - HOST=influxdb
-            - UPTIME_ROBOT_KEYS=${UPTIME_ROBOT_KEYS}
-            - UPTIME_API_URL=${UPTIME_API_URL}
-            - UPTIME_INTERVAL_DAYS=${UPTIME_INTERVAL_DAYS}
+            - SONARQUBE_TOKEN=$SONARQUBE_TOKEN
+            - SONARQUBE_API_URL=$SONARQUBE_API_URL
         depends_on:
             - influxdb
         volumes:
