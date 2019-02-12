@@ -9,63 +9,77 @@ const serveIndex = require('serve-index');
 const urlparser = require('url');
 
 
-function getTag(url){
+function getTag(url) {
 
-        var urlObject = urlparser.parse(url);
+  var urlObject = urlparser.parse(url);
 
 
-        var tag = (urlObject.hostname+urlObject.path.replace(/\//g,"-")).toLowerCase();
+  var tag = (urlObject.hostname + urlObject.path.replace(/\//g, "-")).toLowerCase();
 
-        tag=tag.replace(/_/g,'');
+  tag = tag.replace(/_/g, '');
 
-	if ( tag.substring(tag.length-1, tag.length) == '-' ) {
-	 tag = tag.substring(0,tag.length-1);
-	}
-	console.log(` Url ${url} has tag ${tag}`);
+  if (tag.substring(tag.length - 1, tag.length) == '-') {
+    tag = tag.substring(0, tag.length - 1);
+  }
+  console.log(` Url ${url} has tag ${tag}`);
 
-	return tag ;
+  return tag;
 }
 
 
 
-const getProjectsByTag = async (tag) => {
+const getProjectsByTag = async (tag,reportDir) => {
 
 
   return new Promise(async (resolve, reject) => {
     try {
 
-      const sonarqubeApi = process.env.SONARQUBE_API_URL+"/api/components/search_projects";
+      const sonarqubeApi = process.env.SONARQUBE_API_URL + "/api/components/search_projects";
 
-       console.log(`tag is ${tag}`);
-        data = await request({
-          method: 'GET',
-          uri: sonarqubeApi,
-          qs: {
-            'filter': `tags = ${tag}`,
-              'ps': 500},
-          json: true,
-          resolveWithFullResponse: true
-        });
+      console.log(`tag is ${tag}`);
+      data = await request({
+        method: 'GET',
+        uri: sonarqubeApi,
+        qs: {
+          'filter': `tags = ${tag}`,
+          'ps': 500
+        },
+        json: true,
+        resolveWithFullResponse: true
+      });
 
-    const response=data['body'];
+      const response = data['body'];
 
-//	    console.log(data);
-    // write data
-	    //
-	    //
-      if ( response["paging"]["total"] > response['paging']['pageSize'] ) {
-              console.log("No paging implemented, too many projects per url - limit is 500");
-              reject("reject");
+     
+      //write data
+      const resultsLocation = path.join(reportDir, `/projects.txt`);
+
+
+      fs.outputJson(resultsLocation, data, {spaces: 2})
+        .then(() => console.log(`Saved response from ${sonarqubeApi}  to ${resultsLocation}`))
+        .catch(err => {
+          console.log(err)
+        })
+
+
+
+
+      //	    console.log(data);
+      // write data
+      //
+      //
+      if (response["paging"]["total"] > response['paging']['pageSize']) {
+        console.log("No paging implemented, too many projects per url - limit is 500");
+        reject("reject");
       }
 
-  var result = [];
-	    
-  for (var i = 0; i < response["components"].length; i++) {
-        if ( response["components"][i]["tags"].indexOf("master") >=0 )
-        {
-		result.push(response["components"][i]);
+      var result = [];
+
+      for (var i = 0; i < response["components"].length; i++) {
+        if (response["components"][i]["tags"].indexOf("master") >= 0) {
+          result.push(response["components"][i]);
         }
-    }
+      }
 
 
 
@@ -81,90 +95,121 @@ const getProjectsByTag = async (tag) => {
 
 
 
-const getProjectStats = async (projects) => {
+const getProjectStats = async (projects, reportDir) => {
 
 
   return new Promise(async (resolve, reject) => {
     try {
-  
-    projectKeys="";
-    do_not_count_coverage=","
-    for (var i = 0; i < projects.length; i++) {
-        projectKeys=projectKeys+projects[i]["key"]+",";
-        if ( projects[i]["tags"].indexOf("do-not-report-coverage") >=0 ) 
-	{
-		do_not_count_coverage=do_not_count_coverage+projects[i]["key"]+",";
-	}
-    }
+
+      projectKeys = "";
+      do_not_count_coverage = ","
+      for (var i = 0; i < projects.length; i++) {
+        projectKeys = projectKeys + projects[i]["key"] + ",";
+        if (projects[i]["tags"].indexOf("do-not-report-coverage") >= 0) {
+          do_not_count_coverage = do_not_count_coverage + projects[i]["key"] + ",";
+        }
+      }
+
+      projectKeys = projectKeys.substring(0, projectKeys.length - 1);
+
+      console.log(`Projectkeys are ${projectKeys}`);
+      if (do_not_count_coverage.length > 2 ) {
+      console.log(`Extracted list of projects for this url  coverage ${do_not_count_coverage}`);
+      }
  
-       projectKeys=projectKeys.substring(0, projectKeys.length-1);
+      const sonarqubeApi = process.env.SONARQUBE_API_URL + "/api/measures/search";
+
+
+      const response = await request({
+        method: 'GET',
+        uri: sonarqubeApi,
+        qs: {
+          'projectKeys': projectKeys,
+          'metricKeys': 'bugs,reliability_rating,vulnerabilities,security_rating,code_smells,sqale_rating,lines_to_cover,uncovered_lines,duplicated_lines,lines'
+        },
+        json: true,
+        resolveWithFullResponse: true
+      });
+
+      //write data
+      const resultsLocation = path.join(reportDir, `/measures.txt`);
+     
       
-      console.log(` Projectkeys are ${projectKeys}`);
- 
-      console.log( ` Do not cpint coverage ${do_not_count_coverage}`);
-	
-      const sonarqubeApi = process.env.SONARQUBE_API_URL+"/api/measures/search";
-
-
-      const  response = await request({
-          method: 'GET',
-          uri: sonarqubeApi,
-          qs: {
-            'projectKeys':  projectKeys,
-            'metricKeys': 'bugs,reliability_rating,vulnerabilities,security_rating,code_smells,sqale_rating,duplicated_lines_density,coverage,lines_to_cover,uncovered_lines,duplicated_lines,lines'
-          },
-          json: true,
-          resolveWithFullResponse: true
+      fs.outputJson(resultsLocation, response, {spaces: 2})
+        .then(() => console.log(`Saved response from ${sonarqubeApi}  to ${resultsLocation}`))
+        .catch(err => {
+          console.log(err)
         });
 
-    //write data
-
-     data = response["body"];
-
-//     console.log(data);
-
-         stats={'bugs':0,'reliability_rating':1,'vulnerabilities':0,'security_rating':1,'code_smells':0,'sqale_rating':1,'duplicated_lines_density':0, 'coverage':0, 'lines_to_cover': 0, 'uncovered_lines': 0, 'duplicated_lines': 0, 'lines': 0 , 'non_duplication_rating': 100, 'coverage_rating': 100 };
 
 
-          for (var i = 0; i < data["measures"].length; i++) {
+      data = response["body"];
 
-           measure=data["measures"][i];
-		 value = parseFloat(measure["value"]);
-    
-	  if ( (measure["metric"] === 'reliability_rating') || (measure["metric"] === 'security_rating' ) ||  (measure["metric"] === 'sqale_rating' )) {
-              if ( value > stats[measure["metric"]] ) {
-	          stats[measure["metric"]]=value;
+      //     console.log(data);
 
-	      }
-	  }
-	  else{
-               if ( (measure["metric"] === "lines_to_cover" ||  measure["metric"] === "uncovered_lines") && do_not_count_coverage.indexOf(","+measure["component"]+",") >= 0 )
-		  {
-			  console.log(`Skipping adding coverage stats from ${measure["component"]} `);
-		  }
-		  else
-			  {
-		   	stats[measure["metric"]]=stats[measure["metric"]]+value;
-			  }
-	  }
-         }
+      stats = {
+        'bugs': 0,
+        'reliability_rating': 1,
+        'vulnerabilities': 0,
+        'security_rating': 1,
+        'code_smells': 0,
+        'sqale_rating': 1,
+        'lines_to_cover': 0,
+        'uncovered_lines': 0,
+        'duplicated_lines': 0,
+        'lines': 0,
+        'non_duplication_rating': 100,
+        'coverage_rating': 100
+      };
 
-         if ( stats['lines'] > 0 ) {
-         stats['non_duplication_rating'] = 100 - (stats['duplicated_lines'] *100 / stats['lines']);
-	 }
-		  if ( stats['lines_to_cover'] > 0 ) {
-         
-		  stats['coverage_rating'] = 100 - (stats['uncovered_lines'] *100 / stats['lines_to_cover']);
-		  }
 
-	      stats['reliability_rating']=100-(stats['reliability_rating']-1)*25;
-              stats['security_rating'] = 100-(stats['security_rating']-1)*25;
-              stats['sqale_rating'] = 100-(stats['sqale_rating']-1)*25;
-            
+      for (var i = 0; i < data["measures"].length; i++) {
 
-  
+        measure = data["measures"][i];
+        value = parseFloat(measure["value"]);
 
-             resolve(stats);
+        if ((measure["metric"] === 'reliability_rating') || (measure["metric"] === 'security_rating') || (measure["metric"] === 'sqale_rating')) {
+          if (value > stats[measure["metric"]]) {
+            stats[measure["metric"]] = value;
+
+          }
+        } else {
+          if ((measure["metric"] === "lines_to_cover" || measure["metric"] === "uncovered_lines") && do_not_count_coverage.indexOf("," + measure["component"] + ",") >= 0) {
+            console.log(`Skipping adding coverage stats (${measure["metric"]}) from ${measure["component"]} `);
+          } else {
+            stats[measure["metric"]] = stats[measure["metric"]] + value;
+          }
+        }
+      }
+
+      if (stats['lines'] > 0) {
+        stats['non_duplication_rating'] = 100 - (stats['duplicated_lines'] * 100 / stats['lines']);
+      }
+      if (stats['lines_to_cover'] > 0) {
+
+        stats['coverage_rating'] = 100 - (stats['uncovered_lines'] * 100 / stats['lines_to_cover']);
+      }
+
+      stats['reliability_rating'] = 100 - (stats['reliability_rating'] - 1) * 25;
+      stats['security_rating'] = 100 - (stats['security_rating'] - 1) * 25;
+      stats['sqale_rating'] = 100 - (stats['sqale_rating'] - 1) * 25;
+
+
+      //write data
+      const statsLocation = path.join(reportDir, `/stats.json`);
+
+
+      fs.outputJson(statsLocation, stats, {spaces: 2})
+        .then(() => console.log(`Saved stats  to ${statsLocation}`))
+        .catch(err => {
+          console.log(err)
+        })
+
+
+
+
+
+      resolve(stats);
     } catch (err) {
       console.log(err);
       reject("reject");
@@ -185,23 +230,20 @@ const getData = async (options) => {
 
   return new Promise(async (resolve, reject) => {
 
-    console.log("get tag");
+    folder =  garie_plugin.utils.helpers.reportDir(options);
+
     tag = getTag(url);
-    console.log("get projects");
 
-    projects = await getProjectsByTag(tag);
+    projects = await getProjectsByTag(tag,folder);
 
-	  if (projects != null && projects.length > 0) {
-
-    console.log("get stats");
-
-    stats = await getProjectStats(projects);
-    console.log (` ${url} and stats ${JSON.stringify(stats)} `);
-	  }
-	  else
-	  {     console.log("no projects found");
-		  reject("reject");
-	  }
+    if (projects != null && projects.length > 0) {
+      stats = await getProjectStats(projects, folder);
+      console.log(`Received for ${url} stats ${JSON.stringify(stats)} `);
+     
+    } else {
+      console.log(`No sonarqube projects found for ${url}`);
+      reject("reject");
+    }
 
     resolve(stats);
 
@@ -215,7 +257,9 @@ console.log("Start");
 
 
 const app = express();
-app.use('/reports', express.static('reports'), serveIndex('reports', { icons: true }));
+app.use('/reports', express.static('reports'), serveIndex('reports', {
+  icons: true
+}));
 
 const main = async () => {
 
@@ -235,5 +279,3 @@ if (process.env.ENV !== 'test') {
     await main();
   });
 }
-
-
