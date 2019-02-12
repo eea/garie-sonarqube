@@ -15,7 +15,9 @@ function getTag(url){
 
 
         var tag = (urlObject.hostname+urlObject.path.replace(/\//g,"-")).toLowerCase();
-	
+
+        tag=tag.replace(/_/g,'');
+
 	if ( tag.substring(tag.length-1, tag.length) == '-' ) {
 	 tag = tag.substring(0,tag.length-1);
 	}
@@ -91,14 +93,16 @@ const getProjectStats = async (projects) => {
         projectKeys=projectKeys+projects[i]["key"]+",";
         if ( projects[i]["tags"].indexOf("do-not-report-coverage") >=0 ) 
 	{
-		do_not_count_coverage=do_not_count_coverage+projects[i]["key"];
+		do_not_count_coverage=do_not_count_coverage+projects[i]["key"]+",";
 	}
     }
  
        projectKeys=projectKeys.substring(0, projectKeys.length-1);
       
       console.log(` Projectkeys are ${projectKeys}`);
-
+ 
+      console.log( ` Do not cpint coverage ${do_not_count_coverage}`);
+	
       const sonarqubeApi = process.env.SONARQUBE_API_URL+"/api/measures/search";
 
 
@@ -125,21 +129,22 @@ const getProjectStats = async (projects) => {
           for (var i = 0; i < data["measures"].length; i++) {
 
            measure=data["measures"][i];
+		 value = parseFloat(measure["value"]);
     
 	  if ( (measure["metric"] === 'reliability_rating') || (measure["metric"] === 'security_rating' ) ||  (measure["metric"] === 'sqale_rating' )) {
-              if (measure["value"] > stats[measure["metric"]] ) {
-	          stats[measure["metric"]]=measure["value"];
+              if ( value > stats[measure["metric"]] ) {
+	          stats[measure["metric"]]=value;
 
 	      }
 	  }
 	  else{
                if ( (measure["metric"] === "lines_to_cover" ||  measure["metric"] === "uncovered_lines") && do_not_count_coverage.indexOf(","+measure["component"]+",") >= 0 )
 		  {
-			  console.log(`Skipping adding coverage stats from ${measure["key"]} `);
+			  console.log(`Skipping adding coverage stats from ${measure["component"]} `);
 		  }
 		  else
 			  {
-		   	stats[measure["metric"]]=stats[measure["metric"]]+measure["value"];
+		   	stats[measure["metric"]]=stats[measure["metric"]]+value;
 			  }
 	  }
          }
@@ -152,6 +157,10 @@ const getProjectStats = async (projects) => {
 		  stats['coverage_rating'] = 100 - (stats['uncovered_lines'] *100 / stats['lines_to_cover']);
 		  }
 
+	      stats['reliability_rating']=100-(stats['reliability_rating']-1)*25;
+              stats['security_rating'] = 100-(stats['security_rating']-1)*25;
+              stats['sqale_rating'] = 100-(stats['sqale_rating']-1)*25;
+            
 
   
 
@@ -187,7 +196,7 @@ const getData = async (options) => {
     console.log("get stats");
 
     stats = await getProjectStats(projects);
-    console.log (` ${url} and stats ${stats.toString()} `);
+    console.log (` ${url} and stats ${JSON.stringify(stats)} `);
 	  }
 	  else
 	  {     console.log("no projects found");
