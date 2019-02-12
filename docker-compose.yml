@@ -1,0 +1,28 @@
+version: '3'
+services:
+    influxdb:
+        image: 'influxdb:latest'
+        ports:
+            - 8086:8086
+        environment:
+            - INFLUXDB_ADMIN_USER=admin
+            - INFLUXDB_ADMIN_PASSWORD=admin
+
+    garie-plugin:
+        image: garie-plugin 
+        environment:
+            - HOST=influxdb
+            - UPTIME_ROBOT_KEYS=${UPTIME_ROBOT_KEYS}
+            - UPTIME_API_URL=${UPTIME_API_URL}
+            - UPTIME_INTERVAL_DAYS=${UPTIME_INTERVAL_DAYS}
+        depends_on:
+            - influxdb
+        volumes:
+            - ./src:/usr/src/garie-plugin/src
+
+    chronograf:
+        image: 'chronograf:latest'
+        ports:
+            - 8888:8888
+        depends_on:
+            - influxdb
