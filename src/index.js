@@ -230,14 +230,13 @@ const getData = async (options) => {
 
   return new Promise(async (resolve, reject) => {
 
-    folder =  garie_plugin.utils.helpers.reportDir(options);
-
+    const { reportDir } = options;
     tag = getTag(url);
 
-    projects = await getProjectsByTag(tag,folder);
+    projects = await getProjectsByTag(tag, reportDir);
 
     if (projects != null && projects.length > 0) {
-      stats = await getProjectStats(projects, folder);
+      stats = await getProjectStats(projects, reportDir);
       console.log(`Received for ${url} stats ${JSON.stringify(stats)} `);
      
     } else {
