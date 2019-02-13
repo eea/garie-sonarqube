@@ -28,21 +28,13 @@ function getTag(url) {
 
 
 
-const getProjectsByTag = async (tag, reportDir) => {
+const getProjectsByTag = async (tag,reportDir) => {
 
 
   return new Promise(async (resolve, reject) => {
     try {
 
       const sonarqubeApi = process.env.SONARQUBE_API_URL + "/api/components/search_projects";
-      var headers;
-
-      if (process.env.SONARQUBE_TOKEN != null && process.env.SONARQUBE_TOKEN != "") {
-        auth = "Basic " + new Buffer(process.env.SONARQUBE_TOKEN + ":").toString("base64");
-        headers = {
-          "Authorization": auth
-        }
-      }
 
       console.log(`tag is ${tag}`);
       data = await request({
@@ -53,26 +45,29 @@ const getProjectsByTag = async (tag, reportDir) => {
           'ps': 500
         },
         json: true,
-        headers: headers,
         resolveWithFullResponse: true
       });
 
       const response = data['body'];
 
-
+     
       //write data
       const resultsLocation = path.join(reportDir, `/projects.txt`);
 
 
-      fs.outputJson(resultsLocation, data, {
-          spaces: 2
-        })
+      fs.outputJson(resultsLocation, data, {spaces: 2})
         .then(() => console.log(`Saved response from ${sonarqubeApi}  to ${resultsLocation}`))
         .catch(err => {
           console.log(err)
         })
 
 
+
+
+      //	    console.log(data);
+      // write data
+      //
+      //
       if (response["paging"]["total"] > response['paging']['pageSize']) {
         console.log("No paging implemented, too many projects per url - limit is 500");
         reject("reject");
@@ -91,12 +86,7 @@ const getProjectsByTag = async (tag, reportDir) => {
 
       resolve(result);
     } catch (err) {
-      if (err.name === "StatusCodeError") {
-        console.log(`We have received a bad status from the sonarqube request - ${err.message}, please check the SONARQUBE_TOKEN and SONARQUBE_API parameters`);
-      } else {
-
-        console.log(err);
-      }
+      console.log(err);
       reject("reject");
     }
 
@@ -123,19 +113,13 @@ const getProjectStats = async (projects, reportDir) => {
       projectKeys = projectKeys.substring(0, projectKeys.length - 1);
 
       console.log(`Projectkeys are ${projectKeys}`);
-      if (do_not_count_coverage.length > 2) {
-        console.log(`Extracted list of projects for this url  coverage ${do_not_count_coverage}`);
+      if (do_not_count_coverage.length > 2 ) {
+      console.log(`Extracted list of projects for this url  coverage ${do_not_count_coverage}`);
       }
-
+ 
       const sonarqubeApi = process.env.SONARQUBE_API_URL + "/api/measures/search";
-      var headers;
 
-      if (process.env.SONARQUBE_TOKEN != null && process.env.SONARQUBE_TOKEN != "") {
-        auth = "Basic " + new Buffer(process.env.SONARQUBE_TOKEN + ":").toString("base64");
-        headers = {
-          "Authorization": auth
-        }
-      }
+
       const response = await request({
         method: 'GET',
         uri: sonarqubeApi,
@@ -144,23 +128,24 @@ const getProjectStats = async (projects, reportDir) => {
           'metricKeys': 'bugs,reliability_rating,vulnerabilities,security_rating,code_smells,sqale_rating,lines_to_cover,uncovered_lines,duplicated_lines,lines'
         },
         json: true,
-        headers: headers,
         resolveWithFullResponse: true
       });
 
+      //write data
       const resultsLocation = path.join(reportDir, `/measures.txt`);
-
-
-      fs.outputJson(resultsLocation, response, {
-          spaces: 2
-        })
+     
+      
+      fs.outputJson(resultsLocation, response, {spaces: 2})
         .then(() => console.log(`Saved response from ${sonarqubeApi}  to ${resultsLocation}`))
         .catch(err => {
           console.log(err)
         });
 
 
+
       data = response["body"];
+
+      //     console.log(data);
 
       stats = {
         'bugs': 0,
@@ -209,24 +194,24 @@ const getProjectStats = async (projects, reportDir) => {
       stats['security_rating'] = 100 - (stats['security_rating'] - 1) * 25;
       stats['sqale_rating'] = 100 - (stats['sqale_rating'] - 1) * 25;
 
+
+      //write data
       const statsLocation = path.join(reportDir, `/stats.json`);
 
-      fs.outputJson(statsLocation, stats, {
-          spaces: 2
-        })
+
+      fs.outputJson(statsLocation, stats, {spaces: 2})
         .then(() => console.log(`Saved stats  to ${statsLocation}`))
         .catch(err => {
           console.log(err)
         })
 
+
+
+
+
       resolve(stats);
     } catch (err) {
-      if (err.name === "StatusCodeError") {
-        console.log(`We have received a bad status from the sonarqube request - ${err.message}, please check the SONARQUBE_TOKEN and SONARQUBE_API parameters`);
-      } else {
-
-        console.log(err);
-      }
+      console.log(err);
       reject("reject");
     }
 
@@ -245,9 +230,7 @@ const getData = async (options) => {
 
   return new Promise(async (resolve, reject) => {
 
-    const {
-      reportDir
-    } = options;
+    const { reportDir } = options;
     tag = getTag(url);
 
     projects = await getProjectsByTag(tag, reportDir);
@@ -255,7 +238,7 @@ const getData = async (options) => {
     if (projects != null && projects.length > 0) {
       stats = await getProjectStats(projects, reportDir);
       console.log(`Received for ${url} stats ${JSON.stringify(stats)} `);
-
+     
     } else {
       console.log(`No sonarqube projects found for ${url}`);
       reject("reject");
