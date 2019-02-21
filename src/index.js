@@ -280,9 +280,10 @@ app.use('/reports', express.static('reports'), serveIndex('reports', {
 const main = async () => {
 
   garie_plugin.init({
-    database: "sonarqube",
+    db_name: "sonarqube",
     getData: getData,
-    app_name: 'sonarqube-results',
+    plugin_name: "sonarqube",
+    report_folder_name: 'sonarqube-results',
     app_root: path.join(__dirname, '..'),
     config: config
   });

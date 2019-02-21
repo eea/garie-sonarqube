@@ -11,11 +11,11 @@
         "start": "node ./src/index.js"
     },
     "dependencies": {
-        "garie-plugin": "https://github.com/eea/garie-plugin",
-	"dateformat": "*",
+        "garie-plugin": "https://github.com/eea/garie-plugin#0.0.5",
+        "dateformat": "*",
         "request": "^2.88.0",
         "request-promise": "^4.2.2",
-	"fs-extra": "^7.0.0"
+        "fs-extra": "^7.0.0"
     },
         "devDependencies": {
         "codecov": "^3.0.0",

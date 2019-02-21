@@ -12,7 +12,6 @@ services:
         build: .
         environment:
             - HOST=influxdb
-            - SONARQUBE_TOKEN=$SONARQUBE_TOKEN
             - SONARQUBE_API_URL=$SONARQUBE_API_URL
         depends_on:
             - influxdb
