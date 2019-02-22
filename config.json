@@ -1,18 +1,392 @@
 {
-  "plugins":{
-        "sonarqube":{
-            "cron": "0 */4 * * *"
-        }
-    },
-  "urls": [
-    {
-      "url": "https://www.eea.europa.eu/"
-    },
-    {
-      "url": "https://www.eionet.europa.eu/"
-    },
-     {
-      "url": "http://lpd.eionet.europa.eu/lpd_web/pages/login/beneficiary.xhtml"
-    }
-  ]
+        "plugins":{
+            "uptimerobot":{ "cron": "5 1 * * *" },
+            "pagespeed-insights":{ "cron": "30 1 * * *" },
+            "sonarqube":{ "cron": "0 2 * * *" },
+            "sentry-metrics":{ "cron": "30 2 * * *" },
+            "securityheaders":{ "cron": "0 3 * * *" },
+            "browsertime":{ "cron": "30 3 * * *" },
+            "ssllabs":{ "cron": "30 4 * * *" },
+            "linksintegrity":{ "cron": "0 5 * * *" },
+            "lighthouse":{ "cron": "30 6 * * *" }
+        },              
+        "urls": [
+                {
+                        "url": "https://acladmin.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://acm.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://airindex.eea.europa.eu",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://bd.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://bdr.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://biodiversity.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://cca.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://cdr.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://cdrsandbox.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://cdrtest.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://chm-root.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://climate-adapt.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://climate.discomap.eea.europa.eu/arcgis/rest/services/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://converters.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://convertersbdr.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://cr.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://dd.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://discomap.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://emerald.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://emrt-esd.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://emrt-necd.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://epanet.pbe.eea.europa.eu/",
+                        "plugins": { 
+                            "sentry-metrics":{
+                                "sentry_config": [
+                                {
+                                  "sentryId": 13,
+                                  "filters":{
+                                     "serverEvents":{
+                                          "operator":"contains", "field":"tags.url", "value":"epanet.pbe.eea.europa.eu"
+                                      },
+                                      "jsEvents":{
+                                          "operator":"contains", "field":"tags.url", "value":"epanet.pbe.eea.europa.eu"
+                                      }
+                                   }
+                                }
+                              ],
+                              "matomoId": 20
+                            }                           
+                        }
+                },
+                {
+                        "url": "https://eunis.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://forum.eionet.europa.eu/",
+                        "plugins": {
+                            "sentry-metrics":{
+                              "sentry_config": [
+                                {
+                                  "sentryId": 3
+                                },
+                                {
+                                  "sentryId": 6
+                                }
+                              ],
+                              "matomoId": 16
+                            }                                           
+                        }
+                },
+                {
+                        "url": "https://helpadmin.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://helpdesk.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://icm.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://lpd.eionet.europa.eu/lpd_web/pages/login/beneficiary.xhtml",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://mdr.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://natura2000.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://noise.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://papers.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://pbe.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://pfli.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://planner.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://plone5demo.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://projects.eionet.europa.eu/",
+                        "plugins": { 
+                            "sentry-metrics":{
+                              "sentry_config": [
+                                {
+                                  "sentryId": 11
+                                }
+                              ],
+                              "matomoId": 18
+                            }                           
+                        }
+                },
+                {
+                        "url": "http://prtr.ec.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://rdfdata.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://riot.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://scp.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://sso.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://transfer.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://uls.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://water.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://webformsbdr.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://wmge.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://www.eea.europa.eu/",
+                        "plugins": {
+                            "sentry-metrics":{
+                              "sentry_config": [
+                                {
+                                  "sentryId": 2
+                                }
+                              ],
+                              "matomoId": 3
+                            }
+                        }
+                },
+                {
+                        "url": "https://www.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://aasc.pbe.eea.europa.eu/",
+                        "plugins": { 
+                            "sentry-metrics":{
+                              "sentry_config": [
+                                {
+                                  "sentryId": 13,
+                                  "filters":{
+                                     "serverEvents":{
+                                          "operator":"contains", "field":"tags.url", "value":"aasc.pbe.eea.europa.eu"
+                                      },
+                                      "jsEvents":{
+                                          "operator":"contains", "field":"tags.url", "value":"aasc.pbe.eea.europa.eu"
+                                      }
+                                   }
+                                }
+                              ],
+                              "matomoId": 21
+                            }                           
+                        }
+                },
+                {
+                        "url": "https://cis2.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://community.eea.europa.eu/",
+                        "plugins": {
+                            "sentry-metrics":{
+                              "sentry_config": [
+                                {
+                                  "sentryId": 24
+                                }
+                              ],
+                              "matomoId": 36
+                            }
+                        }
+                },
+                {
+                        "url": "https://corda.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://eni-seis.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://fme.discomap.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://fmebatch.discomap.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://hrl-copernicus.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://idp.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://insitu.copernicus.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://land.copernicus.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://maps-corda.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://r.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "http://reference.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://rod.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://sdi.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://semantic.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://svn.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://tableau.discomap.eea.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://tableau.discomap.eea.europa.eu/t/Aironline/views/PaM_Viewer_2018/OverviewofreportedclimatePaMs/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://taskman.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://uns.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://vacancies.eea.europa.eu/applicationForm.aspx?PostRef=EEA/CA/2018/13/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://webforms.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://webformstest.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://webq2test.eionet.europa.eu/",
+                        "plugins": { }
+                },
+                {
+                        "url": "https://www.eionet.europa.eu/gemet/en/themes/",
+                        "plugins": { }
+                }
+        ]
 }

@@ -248,6 +248,7 @@ const getData = async (options) => {
     const {
       reportDir
     } = options;
+    var stats;
     tag = getTag(url);
     const reportDirNow = garie_plugin.utils.helpers.reportDirNow(reportDir);
     projects = await getProjectsByTag(tag, reportDirNow);
