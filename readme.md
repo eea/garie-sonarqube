@@ -1,6 +1,85 @@
+# Garie sonarqube plugin
 
-# Garie plugin to extract Sonarqube statistics by tags
+<p align="center">
+  <p align="center">Tool to extract Sonarqube statistics by tags, and supports CRON jobs.<p>
+</p>
 
+**Highlights**
+
+-   Poll for sonarqube statistics and stores the data into InfluxDB
+-   View all historic reports.
+-   Setup within minutes
+
+## Overview of garie-sonarqube
+
+Garie-sonarqube was developed as a plugin for the [Garie](https://github.com/boyney123/garie) Architecture.
+
+[Garie](https://github.com/boyney123/garie) is an out the box web performance toolkit, and `garie-securityheaders` is a plugin that generates and stores securityheaders data into `InfluxDB`.
+
+`Garie-sonarqube` can also be run outside the `Garie` environment and run as standalone.
+
+If your interested in an out the box solution that supports multiple performance tools like `securityheaders`, `google-speed-insight` and `lighthouse` then checkout [Garie](https://github.com/boyney123/garie).
+
+If you want to run `garie-sonarqube` standalone you can find out how below.
+
+## Getting Started
+
+### Prerequisites
+
+-   Docker installed
+
+### Running garie-securityheaders
+
+You can get setup with the basics in a few minutes.
+
+First clone the repo.
+
+```sh
+git clone https://github.com/eea/garie-sonarqube.git
+```
+
+Next setup you're config. Edit the `config.json` and add websites to the list.
+
+```javascript
+{
+  "plugins":{
+        "sonarqube":{
+            "cron": "0 */4 * * *"
+        }
+    },
+  "urls": [
+    {
+      "url": "https://www.eea.europa.eu/"
+    },
+    {
+      "url": "https://www.eionet.europa.eu/"
+    }
+  ]
+}
+```
+
+Once you finished edited your config, lets setup our environment.
+
+```sh
+docker-compose up
+```
+
+This will build your copy of `garie-sonarqube` and run the application.
+
+On start garie-sonarqube will start to gather statistics for the websites added to the `config.json`.
+
+## config.json
+
+| Property | Type                | Description                                                                          |
+| -------- | ------------------- | ------------------------------------------------------------------------------------ |
+| `cron`   | `string` (optional) | Cron timer. Supports syntax can be found [here].(https://www.npmjs.com/package/cron) |
+| `urls`   | `object` (required) | Config for sonarqube. More detail below                                              |
+
+**urls object**
+
+| Property | Type                | Description                         |
+| -------- | ------------------- | ----------------------------------- |
+| `url`    | `string` (required) | Url to get sonarqube metrics for.   |
 
 
 ## Variables
@@ -41,18 +120,3 @@ We are extracting the projects that have the tag `master` and the tag that is cr
 2. No underscores (_)
 3. Slash (/) becomes line -
 4. If url ends with /, it is deleted
-
-
-
-
-
-### For development
-
-docker-compose -f docker-compose-dev.yml build
-docker-compose -f docker-compose-dev.yml up
-docker exec -it garie-sonarqube_garie-plugin_1 bash
-
-root@6642eff38f49:/usr/src/garie-sonarqube# cd src
-root@6642eff38f49:/usr/src/garie-sonarqube/src# npm start
-
-
