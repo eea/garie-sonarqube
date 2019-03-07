@@ -279,21 +279,32 @@ app.use('/reports', express.static('reports'), serveIndex('reports', {
 }));
 
 const main = async () => {
-
-  garie_plugin.init({
-    db_name: "sonarqube",
-    getData: getData,
-    plugin_name: "sonarqube",
-    report_folder_name: 'sonarqube-results',
-    app_root: path.join(__dirname, '..'),
-    config: config
+  return new Promise(async (resolve, reject) => {
+    try{
+      garie_plugin.init({
+        db_name: "sonarqube",
+        getData: getData,
+        plugin_name: "sonarqube",
+        report_folder_name: 'sonarqube-results',
+        app_root: path.join(__dirname, '..'),
+        config: config
+      });
+    }
+    catch(err){
+      reject(err);
+    }
   });
-
 }
 
 if (process.env.ENV !== 'test') {
-  app.listen(3000, async () => {
+  const server = app.listen(3000, async () => {
     console.log('Application listening on port 3000');
-    await main();
+    try{
+      await main();
+    }
+    catch(err){
+      console.log(err);
+      server.close();
+    }
   });
 }
