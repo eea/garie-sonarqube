@@ -281,7 +281,7 @@ app.use('/reports', express.static('reports'), serveIndex('reports', {
 const main = async () => {
   return new Promise(async (resolve, reject) => {
     try{
-      garie_plugin.init({
+      await garie_plugin.init({
         db_name: "sonarqube",
         getData: getData,
         plugin_name: "sonarqube",
