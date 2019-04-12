@@ -244,26 +244,27 @@ const getData = async (options) => {
 
 
   return new Promise(async (resolve, reject) => {
-
-    const {
-      reportDir
-    } = options;
-    var stats;
-    tag = getTag(url);
-    const reportDirNow = garie_plugin.utils.helpers.reportDirNow(reportDir);
-    projects = await getProjectsByTag(tag, reportDirNow);
-
-    if (projects != null && projects.length > 0) {
-      stats = await getProjectStats(projects, reportDirNow);
-      console.log(`Received for ${url} stats ${JSON.stringify(stats)} `);
-
-    } else {
-      console.log(`No sonarqube projects found for ${url}`);
-      reject("reject");
+    try{
+      const {
+        reportDir
+      } = options;
+      var stats;
+      tag = getTag(url);
+      const reportDirNow = garie_plugin.utils.helpers.reportDirNow(reportDir);
+      projects = await getProjectsByTag(tag, reportDirNow);
+      if (projects != null && projects.length > 0) {
+        stats = await getProjectStats(projects, reportDirNow);
+        console.log(`Received for ${url} stats ${JSON.stringify(stats)} `);
+      } else {
+        console.log(`No sonarqube projects found for ${url}`);
+        resolve(null);
+        return;
+      }
+      resolve(stats);
     }
-
-    resolve(stats);
-
+    catch(err){
+      reject(err);
+    }
   });
 };
 
