@@ -1,6 +1,6 @@
 {
     "name": "garie-sonarqube",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Garie plugin for sonarqube",
     "engines": {
         "node": ">=6"
