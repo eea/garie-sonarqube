@@ -79,6 +79,10 @@ On start garie-sonarqube will start to gather statistics for the websites added 
 | `plugins.sonarqube.retry.timeRange`   | `number` (optional, default 360) | Period in minutes to be checked in influx, to know if a task failed |
 | `urls`   | `object` (required) | Config for sonarqube. More detail below                                              |
 
+MAX_AGE_OF_REPORT_FILES - int (default to 365), Maximum age (in days) of report files that can be deleted.
+MAX_AGE_OF_REPORT_VIDEOS - int (default to 100), Maximum age (in days) of report videos that can be deleted.
+CRON_DELETE_OLD_REPORTS - cronjob (default to '0 5 * * *') The frequency of checking old report files / videos.
+
 **urls object**
 
 | Property | Type                | Description                         |
@@ -124,3 +128,6 @@ We are extracting the projects that have the tag `master` and the tag that is cr
 2. No underscores (_)
 3. Slash (/) becomes line -
 4. If url ends with /, it is deleted
+
+For more information please go to the [garie-plugin](https://github.com/eea/garie-plugin) repo.
+
