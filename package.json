@@ -1,6 +1,6 @@
 {
     "name": "garie-sonarqube",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "Garie plugin for sonarqube",
     "engines": {
         "node": ">=6"
@@ -13,7 +13,7 @@
     "dependencies": {
         "dateformat": "*",
         "fs-extra": "^7.0.0",
-        "garie-plugin": "https://github.com/eea/garie-plugin#0.0.41",
+        "garie-plugin": "https://github.com/eea/garie-plugin#0.0.42",
         "request": "^2.88.0",
         "request-promise": "^4.2.2"
     },
