@@ -79,9 +79,7 @@ const getProjectsByTag = async (tag, reportDir) => {
       var result = [];
 
       for (var i = 0; i < response["components"].length; i++) {
-        if (response["components"][i]["tags"].indexOf("master") >= 0) {
           result.push(response["components"][i]);
-        }
       }
 
 
@@ -139,6 +137,7 @@ const getProjectStats = async (projects, reportDir) => {
         uri: sonarqubeApi,
         qs: {
           'projectKeys': projectKeys,
+          'branch': master,
           'metricKeys': 'bugs,reliability_rating,vulnerabilities,security_rating,code_smells,sqale_rating,lines_to_cover,uncovered_lines,duplicated_lines,lines'
         },
         json: true,
