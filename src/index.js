@@ -137,7 +137,7 @@ const getProjectStats = async (projects, reportDir) => {
         uri: sonarqubeApi,
         qs: {
           'projectKeys': projectKeys,
-          'branch': master,
+          'branch': 'master',
           'metricKeys': 'bugs,reliability_rating,vulnerabilities,security_rating,code_smells,sqale_rating,lines_to_cover,uncovered_lines,duplicated_lines,lines'
         },
         json: true,
